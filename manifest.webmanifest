@@ -1,0 +1,26 @@
+{
+  "name": "Scène par Scène — l'anglais par les séries",
+  "short_name": "Scène par Scène",
+  "description": "Apprends l'anglais (A1 à C2) avec des scènes de séries : audio, dictée, vocabulaire, lexique avancé.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1020",
+  "theme_color": "#0f1020",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

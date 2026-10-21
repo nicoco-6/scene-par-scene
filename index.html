@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scène par Scène — L'anglais par les séries</title>
+<meta name="theme-color" content="#0f1020">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Scène par Scène">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Apprends l'anglais (A1 à C2) avec des scènes de séries : audio, dictée, vocabulaire, lexique avancé.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
+<style>
+:root{--bg:#0f1020;--card:#1a1b33;--card2:#23244a;--text:#f2f2fa;--muted:#9a9cc4;--accent:#ff5c8a;--accent2:#7c5cff;--ok:#3ddc97;--ko:#ff6b6b;--r:18px}
+:root.light{--bg:#f6f5fb;--card:#fff;--card2:#ecebf7;--text:#1b1b30;--muted:#6b6d90}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(1200px 600px at 10% -10%,#2a1f5c55,transparent),var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:12px 20px;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid #ffffff12}
+.logo{font-weight:800;font-size:1.2rem;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-right:auto;cursor:pointer}
+nav{display:flex;gap:6px}
+nav button{background:transparent;padding:8px 14px;border-radius:999px;color:var(--muted);font-weight:600}
+nav button.on{background:var(--card2);color:var(--text)}
+.icon{background:var(--card2);width:38px;height:38px;border-radius:50%}
+main{max-width:980px;margin:0 auto;padding:24px 18px 80px}
+h1{font-size:1.9rem;margin-bottom:6px}h2{font-size:1.3rem;margin:22px 0 10px}
+.sub{color:var(--muted);margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:0 8px 30px #0003;border:1px solid #ffffff0d}
+.scene-card{cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.scene-card:hover{transform:translateY(-4px);border-color:var(--accent2)}
+.scene-card .emoji{font-size:2.2rem}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--card2);color:var(--muted);margin-right:6px}
+.tag.c2{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+.bar{height:6px;border-radius:9px;background:var(--card2);margin-top:12px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.btn{background:linear-gradient(90deg,var(--accent),var(--accent2));padding:10px 18px;border-radius:999px;font-weight:700;color:#fff}
+.btn.ghost{background:var(--card2);color:var(--text)}
+.btn.small{padding:6px 12px;font-size:.85rem}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.stat{flex:1;min-width:120px;background:var(--card);border-radius:var(--r);padding:14px;text-align:center}
+.stat b{display:block;font-size:1.6rem}
+.video{aspect-ratio:16/9;width:100%;border-radius:var(--r);overflow:hidden;background:#000;margin-bottom:10px}
+.video iframe{width:100%;height:100%;border:0}
+.vbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.vbar input{flex:1;min-width:200px;background:var(--card2);border:1px solid #ffffff15;color:var(--text);padding:9px 14px;border-radius:999px;font:inherit}
+.line{display:flex;gap:12px;padding:12px 14px;border-radius:14px;margin-bottom:8px;background:var(--card);align-items:flex-start;transition:.2s}
+.line.playing{background:var(--card2);box-shadow:0 0 0 2px var(--accent)}
+.who{font-weight:800;min-width:78px;color:var(--accent);font-size:.85rem;padding-top:3px}
+.txt{flex:1;font-size:1.08rem}
+.w{cursor:pointer;border-radius:5px;padding:0 1px}.w:hover{background:#ff5c8a44}
+.w.kw{border-bottom:2px dotted var(--accent2)}
+.w.saved{background:#3ddc9733}
+.play{background:var(--card2);width:34px;height:34px;border-radius:50%;flex:none}
+.tr{color:var(--muted);font-size:.92rem;margin-top:4px;display:none}
+.showtr .tr{display:block}
+.panel{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(150%);width:min(560px,94vw);background:var(--card);border:1px solid var(--accent2);border-radius:var(--r);padding:16px;box-shadow:0 20px 60px #0008;transition:.3s;z-index:30}
+.panel.open{transform:translateX(-50%)}
+.panel h3{font-size:1.3rem}.panel .def{margin:8px 0;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.vocab-session{margin-bottom:22px}
+.vitem{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff10}
+.vitem .l{flex:1}.vitem b{font-size:1.05rem}.vitem small{color:var(--muted);display:block}
+.opt{display:block;width:100%;text-align:left;background:var(--card2);padding:12px 16px;border-radius:14px;margin-top:8px;font-weight:600;border:2px solid transparent}
+.opt.ok{border-color:var(--ok);background:#3ddc9722}.opt.ko{border-color:var(--ko);background:#ff6b6b22}
+.fc{perspective:900px;height:230px;margin:14px 0;cursor:pointer}
+.fc>div{position:relative;width:100%;height:100%;transition:.5s;transform-style:preserve-3d}
+.fc.flip>div{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px;border-radius:var(--r);background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid #ffffff15}
+.fc .back{transform:rotateY(180deg)}
+.fc .face b{font-size:1.7rem}
+.back-link{background:none;color:var(--muted);font-weight:600;margin-bottom:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.chip{background:var(--card2);color:var(--muted);padding:7px 15px;border-radius:999px;font-weight:700}
+.chip.on{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+.w.now{background:#7c5cff77}
+.tag.lv-A{background:#3ddc9722;color:var(--ok)}
+.tag.lv-B{background:#4da3ff22;color:#4da3ff}
+.tag.lv-C{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+.play.rec{background:var(--ko);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.55}}
+.cin{background:var(--card2);color:var(--text);border:2px solid var(--accent2);border-radius:10px;padding:4px 10px;font:inherit;width:9em;text-align:center}
+.lexw{font-size:1.3rem}.lexcard .def{color:var(--muted);margin:6px 0}.lexcard p i{color:var(--text);opacity:.85}
+.vs{flex:1;min-width:180px;background:var(--card2);border:1px solid #ffffff15;color:var(--text);padding:8px 14px;border-radius:999px;font:inherit}
+.blur .e{filter:blur(7px);cursor:pointer;transition:.2s}
+.blur .line.playing .e,.blur .e:hover{filter:none}
+.okw{color:var(--ok);font-weight:700}
+.kow{color:var(--ko);font-weight:700;text-decoration:underline}
+textarea{width:100%;background:var(--card2);color:var(--text);border:1px solid #ffffff18;border-radius:14px;padding:12px 14px;font:inherit;resize:vertical}
+.empty{color:var(--muted);text-align:center;padding:40px 0}
+select{background:var(--card2);color:var(--text);border:0;padding:9px 12px;border-radius:999px;font:inherit}
+@media(max-width:600px){nav button{padding:8px 9px;font-size:.85rem}.who{min-width:56px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" onclick="go('home')">🎬 Scène par Scène</div>
+  <nav>
+    <button data-v="home">Scènes</button>
+    <button data-v="lexicon">Lexique</button>
+    <button data-v="vocab">Vocabulaire</button>
+    <button data-v="review">Réviser</button>
+  </nav>
+  <button class="icon" id="theme" title="Thème">🌙</button>
+</header>
+<main id="app"></main>
+<div class="panel" id="panel"></div>
+
+<script>
+/* ======================= DONNÉES ======================= */
+/* Scènes originales (écrites pour l'app) dans l'esprit de grandes séries — niveau C1/C2.
+   Pour chaque scène, colle un lien YouTube d'un extrait légal dans le champ vidéo. */
+const SCENES=[
+{id:"neighbour",emoji:"👋",title:"Hello, Neighbour",genre:"Sitcom",level:"A1",ytSearch:"easy english dialogue meeting neighbour",
+ lines:[
+ ["Emma","Hello! I'm Emma. I live in number five."],
+ ["Tom","Hi, Emma! I'm Tom. Nice to meet you."],
+ ["Emma","Nice to meet you, too. Are you new here?"],
+ ["Tom","Yes, I am. I moved in yesterday."],
+ ["Emma","Welcome! Do you want a cup of tea?"],
+ ["Tom","Yes, please. Thank you very much!"]],
+ tr:["Bonjour ! Je m'appelle Emma. J'habite au numéro cinq.","Salut, Emma ! Je m'appelle Tom. Enchanté.","Enchantée aussi. Tu es nouveau ici ?","Oui. J'ai emménagé hier.","Bienvenue ! Tu veux une tasse de thé ?","Oui, s'il te plaît. Merci beaucoup !"],
+ vocab:[["Nice to meet you","Enchanté","Nice to meet you, Anna."],["I live in","J'habite à / dans","I live in Paris."],["new here","nouveau ici","Are you new here?"],["move in","emménager","We moved in on Monday."],["Welcome","Bienvenue","Welcome to my home!"],["Yes, please","Oui, s'il vous plaît","Yes, please. I'd love one."]],
+ quiz:[["How do you say 'Enchanté' in English?",["Nice to meet you","See you soon","Good night"],0],["'I moved in yesterday' means…",["Je pars demain","J'ai emménagé hier","Je cours vite"],1],["Which answer is polite for 'Do you want tea?'",["Yes, please.","Give me tea.","No tea you."],0]]},
+{id:"coffee",emoji:"☕",title:"A Coffee, Please",genre:"Comédie romantique",level:"A1",ytSearch:"easy english dialogue ordering coffee",
+ lines:[
+ ["Barista","Good morning! What would you like?"],
+ ["Lucy","A coffee, please. With milk."],
+ ["Barista","Small, medium or large?"],
+ ["Lucy","Medium, please. How much is it?"],
+ ["Barista","That's three euros fifty."],
+ ["Lucy","Here you are. Thank you!"]],
+ tr:["Bonjour ! Qu'est-ce que vous désirez ?","Un café, s'il vous plaît. Avec du lait.","Petit, moyen ou grand ?","Moyen, s'il vous plaît. Combien ça coûte ?","Ça fait trois euros cinquante.","Voilà. Merci !"],
+ vocab:[["What would you like?","Qu'est-ce que vous désirez ?","What would you like to drink?"],["with milk","avec du lait","Tea with milk, please."],["small, medium, large","petit, moyen, grand","I'd like a large coffee."],["How much is it?","Combien ça coûte ?","How much is it, please?"],["Here you are","Tenez / Voilà","Here you are, sir."],["Thank you","Merci","Thank you very much."]],
+ quiz:[["'How much is it?' asks about…",["the price","the time","the weather"],0],["You say 'Here you are' when you…",["give something to someone","say goodbye","are lost"],0],["'Large' means…",["petit","moyen","grand"],2]]},
+{id:"luggage",emoji:"🧳",title:"Lost Luggage",genre:"Comédie de voyage",level:"A2",ytSearch:"english conversation airport lost luggage",
+ lines:[
+ ["Passenger","Excuse me, my suitcase didn't arrive. Can you help me?"],
+ ["Clerk","I'm sorry about that. What does it look like?"],
+ ["Passenger","It's big and blue, with a yellow ribbon on the handle."],
+ ["Clerk","Okay. Which flight were you on?"],
+ ["Passenger","Flight 204 from Madrid. I landed an hour ago."],
+ ["Clerk","Don't worry. We'll call you as soon as we find it."]],
+ tr:["Excusez-moi, ma valise n'est pas arrivée. Pouvez-vous m'aider ?","Désolé pour cela. À quoi ressemble-t-elle ?","Elle est grande et bleue, avec un ruban jaune sur la poignée.","D'accord. Vous étiez sur quel vol ?","Le vol 204 de Madrid. J'ai atterri il y a une heure.","Ne vous inquiétez pas. Nous vous appellerons dès que nous la trouvons."],
+ vocab:[["suitcase","valise","I packed my suitcase."],["look like","ressembler à","What does it look like?"],["handle","poignée","The handle is broken."],["land","atterrir","The plane landed at six."],["as soon as","dès que","Call me as soon as you arrive."],["Don't worry","Ne vous inquiétez pas","Don't worry, it's fine."]],
+ quiz:[["'What does it look like?' asks about…",["appearance","price","time"],0],["To 'land' is to…",["take off","arrive on the ground (plane)","pack"],1],["'As soon as' means…",["dès que","jamais","souvent"],0]]},
+{id:"weekend",emoji:"🥾",title:"Weekend Plans",genre:"Série entre amis",level:"A2",ytSearch:"english conversation weekend plans",
+ lines:[
+ ["Jake","What are you doing this weekend?"],
+ ["Mia","I'm going to visit my grandparents on Saturday."],
+ ["Jake","Sounds nice. And on Sunday?"],
+ ["Mia","I haven't decided yet. Maybe I'll go hiking if the weather is good."],
+ ["Jake","Can I come with you? I've never been to the mountains."],
+ ["Mia","Sure! Let's meet at nine o'clock at the station."]],
+ tr:["Qu'est-ce que tu fais ce week-end ?","Je vais rendre visite à mes grands-parents samedi.","Sympa. Et dimanche ?","Je n'ai pas encore décidé. Peut-être que j'irai faire de la randonnée s'il fait beau.","Je peux venir avec toi ? Je ne suis jamais allé à la montagne.","Bien sûr ! Retrouvons-nous à neuf heures à la gare."],
+ vocab:[["be going to","aller (futur proche)","I'm going to cook tonight."],["Sounds nice","Ça a l'air sympa","A picnic? Sounds nice."],["go hiking","faire de la randonnée","We go hiking every summer."],["haven't decided yet","pas encore décidé","I haven't decided yet."],["weather","météo, temps","The weather is great."],["Let's meet","Retrouvons-nous","Let's meet at noon."]],
+ quiz:[["'Go hiking' means…",["faire de la randonnée","faire du vélo","faire les courses"],0],["'I haven't decided yet' means…",["J'ai déjà choisi","Je n'ai pas encore choisi","Je refuse"],1],["'Let's meet at nine' is…",["a suggestion","a question about age","a complaint"],0]]},
+{id:"interview",emoji:"🧑‍💼",title:"The Job Interview",genre:"Série de bureau",level:"B1",ytSearch:"job interview scene english conversation",
+ lines:[
+ ["Interviewer","So, tell me about your previous experience."],
+ ["Candidate","I worked as a sales assistant for three years, and I was promoted to team leader last spring."],
+ ["Interviewer","Why do you want to leave your current job?"],
+ ["Candidate","I'm looking for new challenges and more responsibility."],
+ ["Interviewer","What would you say is your biggest weakness?"],
+ ["Candidate","I tend to take on too much work, but I'm learning to delegate."]],
+ tr:["Parlez-moi de votre expérience précédente.","J'ai travaillé comme assistant commercial pendant trois ans et j'ai été promu chef d'équipe au printemps dernier.","Pourquoi voulez-vous quitter votre poste actuel ?","Je cherche de nouveaux défis et plus de responsabilités.","Quel serait votre plus grand défaut ?","J'ai tendance à prendre trop de travail, mais j'apprends à déléguer."],
+ vocab:[["previous experience","expérience précédente","Do you have previous experience?"],["be promoted","être promu","She was promoted last year."],["team leader","chef d'équipe","He is our team leader."],["challenge","défi","I love a good challenge."],["take on","prendre en charge","Don't take on too much."],["delegate","déléguer","Learn to delegate tasks."]],
+ quiz:[["'To be promoted' means…",["être renvoyé","obtenir une promotion","changer de ville"],1],["'To delegate' is to…",["give tasks to others","refuse work","work alone"],0],["A 'challenge' is…",["un défi","un salaire","une pause"],0]]},
+{id:"news",emoji:"🏠",title:"Breaking the News",genre:"Drame familial",level:"B1",ytSearch:"family drama scene english telling bad news",
+ lines:[
+ ["Mum","You look worried. Is something wrong?"],
+ ["Ben","I've got something to tell you. I've decided to move abroad for my job."],
+ ["Mum","Abroad? But you've only just started your career here!"],
+ ["Ben","I know, but it's a great opportunity, and I'd regret it if I turned it down."],
+ ["Mum","I'm not angry, I'm just going to miss you terribly."],
+ ["Ben","We'll video call every Sunday, I promise."]],
+ tr:["Tu as l'air inquiet. Il y a un problème ?","J'ai quelque chose à te dire. J'ai décidé de partir à l'étranger pour mon travail.","À l'étranger ? Mais tu viens juste de commencer ta carrière ici !","Je sais, mais c'est une belle opportunité et je le regretterais si je la refusais.","Je ne suis pas fâchée, tu vas juste terriblement me manquer.","On fera un appel vidéo tous les dimanches, je te le promets."],
+ vocab:[["worried","inquiet","She looks worried."],["abroad","à l'étranger","He lives abroad."],["career","carrière","She has a successful career."],["opportunity","opportunité","It's a great opportunity."],["turn down","refuser","He turned down the offer."],["miss","manquer à","I'll miss you."]],
+ quiz:[["'Abroad' means…",["à l'étranger","au travail","à pied"],0],["'Turn down an offer' means…",["accept it","refuse it","read it"],1],["'I'll miss you' means…",["Tu vas me manquer","Je te vois","Je te cherche"],0]]},
+{id:"deadline",emoji:"⏰",title:"The Missed Deadline",genre:"Drame de bureau",level:"B2",ytSearch:"workplace drama missed deadline meeting scene",
+ lines:[
+ ["Manager","I'd have appreciated a heads-up before the deadline slipped."],
+ ["Nina","I understand, and I take full responsibility. The client kept changing the requirements."],
+ ["Manager","That's no excuse. You should have flagged it as soon as the scope changed."],
+ ["Nina","You're right. In hindsight, I ought to have escalated it earlier."],
+ ["Manager","Let's focus on damage control. Can you deliver a draft by Friday?"],
+ ["Nina","If I get the extra resources, I'm confident we can make it."]],
+ tr:["J'aurais apprécié d'être prévenu avant que l'échéance ne glisse.","Je comprends et j'assume l'entière responsabilité. Le client n'arrêtait pas de changer les exigences.","Ce n'est pas une excuse. Vous auriez dû le signaler dès que le périmètre a changé.","Vous avez raison. Avec le recul, j'aurais dû le faire remonter plus tôt.","Concentrons-nous sur la limitation des dégâts. Pouvez-vous livrer une ébauche d'ici vendredi ?","Si j'obtiens des ressources supplémentaires, je suis confiante, on y arrivera."],
+ vocab:[["heads-up","avertissement préalable","Thanks for the heads-up."],["slip","(échéance) glisser, être repoussé","The deadline slipped by a week."],["take responsibility","assumer la responsabilité","He took responsibility for the error."],["scope","périmètre (d'un projet)","The scope of the project changed."],["in hindsight","avec le recul","In hindsight, it was a mistake."],["escalate","faire remonter à la hiérarchie","Escalate the issue to your manager."],["damage control","limitation des dégâts","We're in damage control mode."]],
+ quiz:[["A 'heads-up' is…",["a prior warning","a promotion","a delay"],0],["'In hindsight' means…",["with the benefit of looking back","before deciding","by chance"],0],["To 'escalate' an issue is to…",["ignore it","pass it to higher management","solve it alone"],1]]},
+{id:"alibi",emoji:"🕵️",title:"Second Thoughts",genre:"Série policière",level:"B2",ytSearch:"police interrogation scene english detective",
+ lines:[
+ ["Detective","Your story doesn't add up. You claim you were home all evening."],
+ ["Suspect","That's right. I was watching television."],
+ ["Detective","Strange. A neighbour saw your car parked near the warehouse around ten."],
+ ["Suspect","She must be mistaken. It was dark and she could easily have confused it with another one."],
+ ["Detective","Perhaps. But the security footage might tell a different story."],
+ ["Suspect","I'd like to speak to my lawyer before I say another word."]],
+ tr:["Votre version ne tient pas la route. Vous prétendez avoir été chez vous toute la soirée.","C'est exact. Je regardais la télévision.","Étrange. Une voisine a vu votre voiture garée près de l'entrepôt vers vingt-deux heures.","Elle doit se tromper. Il faisait noir et elle a facilement pu la confondre avec une autre.","Peut-être. Mais les images de vidéosurveillance racontent peut-être une autre histoire.","Je voudrais parler à mon avocat avant de dire un mot de plus."],
+ vocab:[["add up","tenir la route, être cohérent","His story doesn't add up."],["claim","prétendre, affirmer","She claims she was away."],["be mistaken","se tromper","You must be mistaken."],["warehouse","entrepôt","The warehouse was empty."],["security footage","images de vidéosurveillance","Check the security footage."],["tell a different story","raconter une autre histoire","The data tells a different story."],["lawyer","avocat","I want to call my lawyer."]],
+ quiz:[["'Doesn't add up' means…",["is not logical or consistent","is too expensive","is complicated math"],0],["'To claim' is to…",["state something as true","buy","cancel"],0],["'Security footage' is…",["des images de vidéosurveillance","un uniforme","un code"],0]]},
+{id:"court",emoji:"⚖️",title:"The Verdict Hangs",genre:"Drame judiciaire",level:"C1",ytSearch:"courtroom drama closing argument scene",
+ lines:[
+ ["Prosecutor","Ladies and gentlemen, the defence would have you believe this is a mere coincidence. It is anything but."],
+ ["Defence","Objection. My learned colleague is straying into speculation and putting words into the witness's mouth."],
+ ["Judge","Sustained. Counsel, tread carefully, or you'll find yourself in contempt."],
+ ["Prosecutor","I'll rephrase. The defendant had the motive, the means, and, crucially, no alibi worth the name."],
+ ["Defence","My client has been nothing but forthcoming, and yet she has been vilified before a single shred of evidence was tested."],
+ ["Judge","Enough. The jury will disregard the last remark. We'll adjourn until tomorrow morning."]],
+ tr:["Mesdames et messieurs, la défense voudrait vous faire croire à une simple coïncidence. C'est tout sauf cela.","Objection. Mon éminent confrère s'égare en spéculations et met des mots dans la bouche du témoin.","Accordée. Maître, prudence, ou vous serez poursuivi pour outrage.","Je reformule. L'accusée avait le mobile, les moyens et, surtout, aucun alibi digne de ce nom.","Ma cliente a toujours coopéré, et pourtant elle a été clouée au pilori avant que le moindre élément de preuve ne soit examiné.","Ça suffit. Le jury ne tiendra pas compte de la dernière remarque. Nous ajournons à demain matin."],
+ vocab:[["mere","simple, pur (adj. avant le nom)","It was a mere formality."],["straying into","s'égarer dans","He's straying into dangerous territory."],["sustained","(objection) accordée","Objection sustained."],["tread carefully","avancer avec précaution","Tread carefully around the boss."],["contempt","outrage, mépris","He was held in contempt of court."],["forthcoming","coopératif, transparent","She was forthcoming about her past."],["vilify","dénigrer, clouer au pilori","The press vilified him."],["shred of evidence","l'ombre d'une preuve","There's not a shred of evidence."],["adjourn","ajourner, lever la séance","The court adjourned for lunch."]],
+ quiz:[["What does 'sustained' mean when a judge says it?",["The objection is accepted","The trial is over","The witness must leave"],0],["'Not a shred of evidence' means…",["a lot of proof","no proof at all","hidden proof"],1],["To 'adjourn' is to…",["cancel forever","postpone/suspend a session","start immediately"],1]]},
+{id:"office",emoji:"💼",title:"The Pitch That Wasn't",genre:"Comédie de bureau",level:"C1",ytSearch:"office comedy awkward meeting scene",
+ lines:[
+ ["Dana","Let's circle back to this once we've got our ducks in a row. Right now it's all smoke and mirrors."],
+ ["Marcus","Come on, give me some credit. I burnt the midnight oil on this deck."],
+ ["Dana","And it shows, honestly. But you've bitten off more than you can chew with a launch this size."],
+ ["Marcus","So you're saying I should throw in the towel?"],
+ ["Dana","Not at all. I'm saying we need to touch base with legal before we go off half-cocked."],
+ ["Marcus","Fine. But if this blows up in our faces, I'm telling everyone it was your call."]],
+ tr:["Revenons là-dessus quand tout sera en ordre. Pour l'instant ce n'est que de la poudre aux yeux.","Allez, reconnais mon travail. J'ai travaillé tard dans la nuit sur cette présentation.","Ça se voit. Mais tu as vu trop grand avec un lancement de cette taille.","Donc tu me dis de jeter l'éponge ?","Pas du tout. Je dis qu'il faut consulter le juridique avant de s'emballer.","D'accord. Mais si ça nous explose à la figure, je dirai à tout le monde que c'était ta décision."],
+ vocab:[["circle back","revenir sur un sujet plus tard","Let's circle back next week."],["get one's ducks in a row","tout mettre en ordre","Get your ducks in a row before the audit."],["smoke and mirrors","poudre aux yeux","The plan was all smoke and mirrors."],["burn the midnight oil","travailler tard dans la nuit","She burnt the midnight oil to finish."],["bite off more than one can chew","voir trop grand","Don't bite off more than you can chew."],["throw in the towel","jeter l'éponge","He threw in the towel after round two."],["touch base","prendre contact / faire un point","Let's touch base on Monday."],["go off half-cocked","agir sans préparation","Don't go off half-cocked."],["blow up in one's face","se retourner contre soi","The plan blew up in their faces."]],
+ quiz:[["'Smoke and mirrors' describes…",["a magic show only","something deceptive and superficial","a fire emergency"],1],["To 'touch base' is to…",["touch a baseball","briefly get in contact","fight"],1],["'Go off half-cocked' means…",["act without preparation","leave early","get angry"],0]]},
+{id:"med",emoji:"🩺",title:"Code Grey, Level Four",genre:"Série médicale",level:"C2",ytSearch:"medical drama emergency room scene",
+ lines:[
+ ["Dr. Ng","His vitals are labile, and the scan is, frankly, equivocal. We're flying blind here."],
+ ["Dr. Ross","Then we operate. Waiting would be tantamount to signing his death warrant."],
+ ["Dr. Ng","Operating on a hunch is hardly textbook, and the consent form is still pending."],
+ ["Dr. Ross","I'm not asking you to cut corners; I'm asking you to weigh the risk against the inevitable."],
+ ["Dr. Ng","Fine. Prep the theatre. But if he decompensates on the table, this lands squarely on your shoulders."],
+ ["Dr. Ross","It always does. That's what the job entails."]],
+ tr:["Ses constantes sont instables et le scanner est, franchement, équivoque. On navigue à l'aveugle.","Alors on opère. Attendre équivaudrait à signer son arrêt de mort.","Opérer sur une intuition n'est guère orthodoxe, et le formulaire de consentement est toujours en attente.","Je ne te demande pas de brûler les étapes ; je te demande de peser le risque face à l'inévitable.","Très bien. Préparez le bloc. Mais s'il se décompense sur la table, ça retombera entièrement sur toi.","Toujours. C'est ce que le métier implique."],
+ vocab:[["labile","instable (constantes)","His blood pressure is labile."],["equivocal","équivoque, ambigu","The results were equivocal."],["fly blind","naviguer à l'aveugle","We're flying blind without data."],["tantamount to","équivalent à","Silence is tantamount to consent."],["on a hunch","sur une intuition","He bought it on a hunch."],["cut corners","bâcler, brûler les étapes","They cut corners on safety."],["theatre (UK)","bloc opératoire","Prep the theatre."],["decompensate","se décompenser","The patient decompensated overnight."],["entail","impliquer, entraîner","The role entails long hours."]],
+ quiz:[["'Tantamount to' means…",["opposite of","virtually equivalent to","unrelated to"],1],["An 'equivocal' result is…",["clear","ambiguous","positive"],1],["To 'cut corners' is to…",["do something cheaply or skipping steps","drive fast","trim edges"],0]]},
+{id:"politics",emoji:"🏛️",title:"Off the Record",genre:"Thriller politique",level:"C2",ytSearch:"political thriller tense conversation scene",
+ lines:[
+ ["Senator","You'll forgive me if I take your assurances with a pinch of salt. Promises are cheap in this town."],
+ ["Aide","Sir, the leak didn't come from us. If anything, it was a deliberate attempt to sow discord."],
+ ["Senator","Then someone is playing both sides against the middle, and I intend to find out who."],
+ ["Aide","Tread lightly. One misstep and the press will have a field day."],
+ ["Senator","I haven't survived thirty years here by being cavalier. Leave it with me."],
+ ["Aide","And if it turns out to be someone in our own camp?"],
+ ["Senator","Then they'll learn that loyalty is a currency, and I don't print it for free."]],
+ tr:["Vous me pardonnerez de prendre vos assurances avec des pincettes. Les promesses ne coûtent rien dans cette ville.","Monsieur, la fuite ne vient pas de nous. Au contraire, c'était une tentative délibérée de semer la discorde.","Alors quelqu'un joue sur tous les tableaux, et je compte bien trouver qui.","Allez-y doucement. Un faux pas et la presse va se régaler.","Je n'ai pas survécu trente ans ici en étant désinvolte. Laissez-moi m'en charger.","Et si c'est quelqu'un de notre camp ?","Alors il apprendra que la loyauté est une monnaie, et que je ne la frappe pas gratuitement."],
+ vocab:[["take with a pinch of salt","prendre avec des pincettes","Take his claims with a pinch of salt."],["sow discord","semer la discorde","The rumour sowed discord in the team."],["play both sides against the middle","jouer double jeu","He played both sides against the middle."],["misstep","faux pas","One misstep could cost him."],["have a field day","se régaler (souvent aux dépens d'autrui)","The tabloids had a field day."],["cavalier","désinvolte","A cavalier attitude to the rules."],["leave it with me","laissez-moi m'en occuper","Leave it with me, I'll sort it."],["in our own camp","dans notre propre camp","The traitor was in our own camp."],["currency","monnaie (au figuré : valeur d'échange)","Trust is the currency of diplomacy."]],
+ quiz:[["To 'take something with a pinch of salt' is to…",["season it","be sceptical about it","ignore it"],1],["'Cavalier' (adj.) means…",["brave","casually dismissive","horse-related"],1],["'Have a field day' means…",["take a day off","enjoy a golden opportunity","play outdoors"],1]]},
+{id:"family",emoji:"👨‍👩‍👧",title:"Meet My Family",genre:"Sitcom",level:"A1",ytSearch:"easy english dialogue family introduction",
+ lines:[
+ ["Anna","This is my family. This is my mother, Sarah."],
+ ["Anna","And this is my brother. His name is Leo."],
+ ["Chloe","Hello, Leo! How old are you?"],
+ ["Leo","I'm twelve. I like football and pizza."],
+ ["Chloe","Me too! Do you have a sister, Anna?"],
+ ["Anna","No, I don't. I have only one brother."]],
+ tr:["Voici ma famille. Voici ma mère, Sarah.","Et voici mon frère. Il s'appelle Leo.","Bonjour, Leo ! Quel âge as-tu ?","J'ai douze ans. J'aime le football et les pizzas.","Moi aussi ! Tu as une sœur, Anna ?","Non. J'ai seulement un frère."],
+ vocab:[["This is","Voici","This is my friend."],["How old are you?","Quel âge as-tu ?","How old are you, Tom?"],["I'm twelve","J'ai douze ans","I'm twelve years old."],["I like","J'aime","I like music."],["Me too","Moi aussi","I love pizza. - Me too!"],["brother","frère","My brother is tall."],["Do you have","Est-ce que tu as","Do you have a pen?"]],
+ quiz:[["'Brother' means…",["frère","sœur","père"],0],["How do you ask someone's age?",["How old are you?","How are you?","Where are you?"],0],["'Me too' means…",["Moi aussi","Moi non plus","Pas moi"],0]]},
+{id:"doctor",emoji:"🩺",title:"At the Doctor's",genre:"Série médicale",level:"A2",ytSearch:"english conversation at the doctor",
+ lines:[
+ ["Doctor","Good morning. What seems to be the problem?"],
+ ["Patient","I've had a sore throat and a headache since Monday."],
+ ["Doctor","Do you have a fever?"],
+ ["Patient","Yes, a little. I also feel very tired."],
+ ["Doctor","I'll prescribe some medicine. Take one tablet twice a day, after meals."],
+ ["Patient","Thank you, doctor. Should I stay at home?"],
+ ["Doctor","Yes, rest for three days and drink plenty of water."]],
+ tr:["Bonjour. Quel est le problème ?","J'ai mal à la gorge et mal à la tête depuis lundi.","Avez-vous de la fièvre ?","Oui, un peu. Je me sens aussi très fatigué.","Je vais vous prescrire un médicament. Prenez un comprimé deux fois par jour, après les repas.","Merci, docteur. Dois-je rester à la maison ?","Oui, reposez-vous pendant trois jours et buvez beaucoup d'eau."],
+ vocab:[["sore throat","mal de gorge","I have a sore throat."],["headache","mal de tête","She has a headache."],["since","depuis (point de départ)","I've been here since nine."],["fever","fièvre","He has a high fever."],["prescribe","prescrire","The doctor prescribed antibiotics."],["tablet","comprimé","Take one tablet."],["twice a day","deux fois par jour","Brush your teeth twice a day."],["plenty of","beaucoup de","Drink plenty of water."]],
+ quiz:[["'Headache' is…",["mal de tête","mal de dos","mal de gorge"],0],["'Twice a day' means…",["une fois par jour","deux fois par jour","tous les deux jours"],1],["To 'prescribe' medicine is to…",["officially recommend it in writing","buy it","refuse it"],0]]},
+{id:"flatmate",emoji:"🍽️",title:"The Flatmate Problem",genre:"Comédie de colocation",level:"B1",ytSearch:"english conversation flatmate complaint",
+ lines:[
+ ["Sam","Look, I don't want to make a fuss, but the dishes have been piling up all week."],
+ ["Jo","Sorry, I've been swamped at work. I'll sort it out tonight."],
+ ["Sam","You said that yesterday. It's getting on my nerves, to be honest."],
+ ["Jo","Fair enough. How about we draw up a rota so it's fair for both of us?"],
+ ["Sam","That sounds reasonable. And could you keep the music down after ten?"],
+ ["Jo","No problem. I didn't realise it was bothering you."]],
+ tr:["Écoute, je ne veux pas faire d'histoires, mais la vaisselle s'accumule depuis une semaine.","Désolé, j'ai été submergé au travail. Je m'en occupe ce soir.","Tu as dit ça hier. Ça commence à me taper sur les nerfs, pour être honnête.","C'est juste. Et si on établissait un planning pour que ce soit équitable pour nous deux ?","Ça me paraît raisonnable. Et tu pourrais baisser la musique après vingt-deux heures ?","Pas de problème. Je n'avais pas réalisé que ça te dérangeait."],
+ vocab:[["make a fuss","faire des histoires","Don't make a fuss."],["pile up","s'accumuler","Letters piled up while I was away."],["be swamped","être submergé de travail","I'm swamped this week."],["sort out","régler, s'occuper de","I'll sort it out."],["get on one's nerves","taper sur les nerfs","His humming gets on my nerves."],["fair enough","c'est juste, d'accord","Fair enough, you're right."],["rota","planning de tâches (UK)","We have a cleaning rota."],["keep down","baisser (le volume)","Please keep the noise down."]],
+ quiz:[["'Get on my nerves' means…",["m'agacer","me calmer","m'inquiéter"],0],["'Fair enough' is used to…",["accept a reasonable point","refuse","ask the price"],0],["A 'rota' is…",["un planning de tâches","une dispute","un loyer"],0]]},
+{id:"negotiation",emoji:"🤝",title:"The Negotiation",genre:"Série d'affaires",level:"B2",ytSearch:"business negotiation scene english",
+ lines:[
+ ["Client","Frankly, your quote is well above what we'd budgeted for."],
+ ["Supplier","I appreciate that, but bear in mind it covers installation and a three-year warranty."],
+ ["Client","Even so, we'd need a more competitive offer to move forward."],
+ ["Supplier","I might be able to meet you halfway, provided you commit to a two-year contract."],
+ ["Client","That's a step in the right direction. Can you put that in writing by Friday?"],
+ ["Supplier","Certainly. I'll draw up a revised proposal, and we can take it from there."]],
+ tr:["Franchement, votre devis dépasse largement ce que nous avions budgété.","Je comprends, mais n'oubliez pas qu'il comprend l'installation et trois ans de garantie.","Même ainsi, il nous faudrait une offre plus compétitive pour avancer.","Je pourrais peut-être faire un compromis, à condition que vous vous engagiez sur un contrat de deux ans.","C'est un pas dans la bonne direction. Pouvez-vous me le confirmer par écrit d'ici vendredi ?","Bien sûr. Je rédige une proposition révisée et nous verrons à partir de là."],
+ vocab:[["quote","devis","Can I get a quote?"],["budget for","budgétiser","We budgeted for ten people."],["bear in mind","garder à l'esprit","Bear in mind the deadline."],["warranty","garantie","The warranty lasts two years."],["meet someone halfway","faire un compromis","Let's meet halfway."],["provided","à condition que","I'll come provided it's free."],["commit to","s'engager à","He committed to the plan."],["draw up","rédiger, établir","Draw up a contract."]],
+ quiz:[["'Meet someone halfway' means…",["make a compromise","arrive early","give up"],0],["'Provided that' means…",["à condition que","bien que","parce que"],0],["A 'quote' in business is…",["un devis","une facture payée","un reçu"],0]]},
+{id:"press",emoji:"🎤",title:"The Press Conference",genre:"Drame politique",level:"C1",ytSearch:"press conference minister questions scene",
+ lines:[
+ ["Minister","Let me be unequivocal: no public funds were misappropriated."],
+ ["Reporter","Yet the audit paints a rather different picture. How do you square that with your statement?"],
+ ["Minister","The audit is preliminary, and I'd caution against jumping to conclusions."],
+ ["Reporter","With respect, minister, you're dodging the question."],
+ ["Minister","I'm doing nothing of the sort. We have full confidence in due process, and we will cooperate fully."],
+ ["Reporter","Then will you commit to publishing the findings in their entirety?"]],
+ tr:["Soyons sans équivoque : aucun fonds public n'a été détourné.","Pourtant l'audit dresse un tableau assez différent. Comment conciliez-vous cela avec votre déclaration ?","L'audit est préliminaire, et je mettrais en garde contre les conclusions hâtives.","Avec tout le respect que je vous dois, monsieur le ministre, vous esquivez la question.","Je ne fais rien de la sorte. Nous avons pleinement confiance dans la procédure et nous coopérerons pleinement.","Alors vous engagerez-vous à publier les conclusions dans leur intégralité ?"],
+ vocab:[["unequivocal","sans équivoque","an unequivocal denial"],["misappropriate","détourner (des fonds)","Funds were misappropriated."],["paint a picture","dresser un tableau","The data paints a bleak picture."],["square with","concilier avec","How do you square that with the facts?"],["jump to conclusions","tirer des conclusions hâtives","Don't jump to conclusions."],["with respect","avec tout le respect que je vous dois","With respect, I disagree."],["dodge the question","esquiver la question","He dodged the question."],["in their entirety","dans leur intégralité","Publish the files in their entirety."],["due process","procédure régulière","Everyone deserves due process."]],
+ quiz:[["'Unequivocal' means…",["clear and unambiguous","uncertain","angry"],0],["'To dodge a question' is to…",["avoid answering it","repeat it","answer fully"],0],["'Jump to conclusions' means…",["judge too quickly","jump high","conclude a meeting"],0]]},
+{id:"dinner",emoji:"🍷",title:"The Dinner Party",genre:"Comédie de mœurs",level:"C2",ytSearch:"british dinner party witty dialogue scene",
+ lines:[
+ ["Host","Do help yourself to the wine, Edmund. It's a rather presumptuous little Burgundy, but it has its moments."],
+ ["Edmund","You're too modest. Though I confess I'm more partial to your conversation than to your cellar."],
+ ["Host","Flattery will get you everywhere, and I'm not remotely above it."],
+ ["Guest","Edmund's gift is to disguise a barbed remark as a compliment so artfully that one thanks him for it."],
+ ["Edmund","Merely a knack. One learns to temper candour with a modicum of charm."],
+ ["Host","Or to weaponise it. Shall we adjourn to the drawing room before the knives come out?"]],
+ tr:["Servez-vous donc du vin, Edmund. C'est un petit bourgogne assez prétentieux, mais il a ses moments.","Vous êtes trop modeste. Même si j'avoue que j'apprécie davantage votre conversation que votre cave.","La flatterie mène partout, et je ne suis absolument pas au-dessus de cela.","Le talent d'Edmund est de déguiser une remarque acerbe en compliment avec tant d'art qu'on l'en remercie.","Un simple tour de main. On apprend à tempérer la franchise par une pointe de charme.","Ou à en faire une arme. Passons au salon avant que les couteaux ne sortent ?"],
+ vocab:[["help oneself to","se servir","Help yourself to the cake."],["have its moments","avoir ses bons moments","The film has its moments."],["partial to","avoir un faible pour","I'm partial to a good cheese."],["above","trop bien pour (faire qqch)","I'm not above asking for help."],["barbed","acerbe, piquant","a barbed remark"],["artfully","avec art, habilement","She artfully avoided the topic."],["knack","don, tour de main","He has a knack for languages."],["temper","tempérer, atténuer","Temper your criticism with praise."],["candour","franchise","She spoke with disarming candour."],["modicum","une once, un minimum","a modicum of respect"]],
+ quiz:[["A 'barbed' remark is…",["sharp and hurtful","very funny","very long"],0],["To 'have a knack for' something means…",["to be naturally good at it","to dislike it","to forget it"],0],["'A modicum of' means…",["a small amount of","a huge amount of","none of"],0]]}
+];
+const LV=['A1','A2','B1','B2','C1','C2'];SCENES.sort((a,b)=>LV.indexOf(a.level)-LV.indexOf(b.level));
+
+/* ======================= ÉTAT ======================= */
+const $=s=>document.querySelector(s);
+const store={
+ get(k,d){try{return JSON.parse(localStorage.getItem('spp_'+k))??d}catch(e){return d}},
+ set(k,v){try{localStorage.setItem('spp_'+k,JSON.stringify(v))}catch(e){}}
+};
+let state={view:'home',scene:null,showTr:false,rate:1,level:'all',blur:false,lv:'all'};
+let vocab=store.get('vocab',[]);        // [{w,def,ex,session,sceneId,box,added}]
+let done=store.get('done',{});          // sceneId -> best quiz score
+let videos=store.get('videos',{});      // sceneId -> youtube id
+if(store.get('theme')==='light')document.documentElement.classList.add('light');
+
+/* ======================= AUDIO (Web Speech) ======================= */
+let voices=[];
+function loadVoices(){voices=speechSynthesis.getVoices().filter(v=>v.lang.startsWith('en'))}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+function speak(text,onend,onb){
+ if(!('speechSynthesis' in window)){alert("Synthèse vocale non disponible sur ce navigateur.");return}
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(text);
+ const pick=voices.find(v=>v.name===store.get('voice',''))||voices.find(v=>v.lang==='en-GB')||voices.find(v=>v.lang==='en-US')||voices[0];
+ if(pick)u.voice=pick;u.lang=pick?pick.lang:'en-GB';u.rate=state.rate;
+ u.onend=onend;if(onb)u.onboundary=onb;speechSynthesis.speak(u);
+}
+
+/* ======================= NAVIGATION ======================= */
+function go(v,sc){state.view=v;if(sc!==undefined)state.scene=sc;if('speechSynthesis' in window)speechSynthesis.cancel();closePanel();render();scrollTo(0,0)}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+$('#theme').onclick=()=>{const l=document.documentElement.classList.toggle('light');store.set('theme',l?'light':'dark');$('#theme').textContent=l?'☀️':'🌙'};
+function render(){
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===state.view||(state.view==='scene'&&b.dataset.v==='home')));
+ ({home:renderHome,scene:renderScene,vocab:renderVocab,review:renderReview,quiz:renderQuiz,dict:renderDict,cloze:renderCloze,lexicon:renderLex})[state.view]();
+}
+
+/* ======================= ACCUEIL ======================= */
+function renderHome(){
+ const due=vocab.filter(v=>v.box<4).length;const nx=SCENES.find(s=>done[s.id]===undefined);
+ $('#app').innerHTML=`
+ <h1>Apprends l'anglais en vivant les scènes 🎬</h1>
+ <p class="sub">Répliques de séries, vocabulaire A1–C2, audio et vidéo. Clique sur un mot pour l'écouter et l'enregistrer.</p>
+ <div class="stats">
+  <div class="stat"><b>${Object.keys(done).length}/${SCENES.length}</b>scènes terminées</div>
+  <div class="stat"><b>${vocab.length}</b>mots enregistrés</div>
+  <div class="stat"><b>${due}</b>mots à réviser</div>
+  <div class="stat"><b>🔥 ${streakVal()}</b>jours d'affilée</div>
+ </div>
+ ${nx?`<div class="card" style="margin-bottom:18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:200px"><b>Prochaine scène conseillée</b><br><span class="sub" style="margin:0">${nx.emoji} ${nx.title} · ${nx.level}</span></div><button class="btn" onclick="go('scene','${nx.id}')">Continuer →</button></div>`:'<p class="sub">🏆 Toutes les scènes sont terminées !</p>'}
+ ${wotdHtml()}
+ <div class="chips">${['all','A1','A2','B1','B2','C1','C2'].map(l=>`<button class="chip ${state.level===l?'on':''}" onclick="state.level='${l}';renderHome()">${l==='all'?'Tous les niveaux':l}</button>`).join('')}</div>
+ <div class="grid">${SCENES.filter(s=>state.level==='all'||s.level===state.level).map(s=>{const p=done[s.id]!==undefined?Math.round(done[s.id]/s.quiz.length*100):0;return`
+  <div class="card scene-card" onclick="go('scene','${s.id}')">
+   <div class="emoji">${s.emoji}</div>
+   <h2 style="margin:8px 0 6px">${s.title}</h2>
+   <span class="tag lv-${s.level[0]}">${s.level}</span><span class="tag">${s.genre}</span>
+   <p class="sub" style="margin:10px 0 0">${s.vocab.length} expressions · ${s.lines.length} répliques${done[s.id]!==undefined?' · ⭐ '+done[s.id]+'/'+s.quiz.length:''}</p>
+   <div class="bar"><i style="width:${p}%"></i></div>
+  </div>`}).join('')}</div>
+ <div class="row" style="margin-top:30px;justify-content:center">
+  <button class="btn ghost small" onclick="exportAll()">⬇ Sauvegarder ma progression</button>
+  <label class="btn ghost small" style="cursor:pointer">⬆ Restaurer<input type="file" accept=".json" hidden onchange="importAll(this.files[0])"></label>
+ </div>`;
+}
+
+/* ======================= SCÈNE ======================= */
+function ytId(u){const m=u.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/);return m?m[1]:/^[\w-]{11}$/.test(u)?u:null}
+function renderScene(){
+ const s=SCENES.find(x=>x.id===state.scene);const vid=videos[s.id];
+ const kw=s.vocab.map(v=>v[0].replace(/\(.*?\)/g,'').trim().toLowerCase());
+ $('#app').innerHTML=`
+ <button class="back-link" onclick="go('home')">← Toutes les scènes</button>
+ <h1>${s.emoji} ${s.title}</h1>
+ <p class="sub"><span class="tag lv-${s.level[0]}">${s.level}</span><span class="tag">${s.genre}</span></p>
+ ${vid?`<div class="video"><iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen loading="lazy" title="Extrait"></iframe></div><p class="sub" style="margin:-4px 0 12px"><a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener" style="color:var(--accent2)">Si la vidéo ne s'affiche pas : l'ouvrir sur YouTube ↗</a></p>`:''}
+ <div class="vbar">
+  <input id="yt" placeholder="Colle ici un lien YouTube de l'extrait" value="${vid?'https://youtu.be/'+vid:''}">
+  <button class="btn ghost small" onclick="saveVideo('${s.id}')">Ajouter la vidéo</button>
+  <a class="btn ghost small" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.ytSearch)}">Chercher sur YouTube ↗</a>
+ </div>
+ <div class="row" style="margin-bottom:14px">
+  <button class="btn small" onclick="playAll('${s.id}')">▶ Écouter toute la scène</button>
+  <button class="btn ghost small" onclick="state.showTr=!state.showTr;renderScene()">${state.showTr?'Masquer':'Afficher'} la traduction</button>
+  <button class="btn ghost small" onclick="state.blur=!state.blur;renderScene()">${state.blur?'Voir':'Cacher'} le texte anglais 🎧</button>
+  ${voiceSel()}<select onchange="state.rate=+this.value">
+   ${[.7,.85,1,1.15].map(r=>`<option value="${r}" ${state.rate===r?'selected':''}>Vitesse ×${r}</option>`).join('')}
+  </select>
+ </div>
+ <div class="${state.showTr?'showtr':''}${state.blur?' blur':''}" id="lines">
+ ${s.lines.map((l,i)=>`<div class="line" id="L${i}">
+   <div class="who">${l[0]}</div>
+   <div class="txt"><span class="e">${tokenize(l[1],kw,s.id)}</span><div class="tr">${s.tr[i]}</div></div>
+   <button class="play" title="Écouter" onclick="playLine('${s.id}',${i})">🔊</button>
+   <button class="play" id="R${i}" title="Enregistre-toi puis réécoute" onclick="recLine(${i})">🎤</button>
+  </div>`).join('')}
+ </div>
+ <h2>Vocabulaire clé de la scène</h2>
+ <div class="card">${s.vocab.map((v,i)=>`<div class="vitem">
+   <button class="play" onclick="speak(${sq(v[0].replace(/\(.*?\)/g,''))})">🔊</button>
+   <div class="l"><b>${v[0]}</b><small>${v[1]} — <i>${v[2]}</i></small></div>
+   <button class="btn ghost small" onclick="saveKey('${s.id}',${i})">${isSaved(v[0])?'✓ Enregistré':'＋ Enregistrer'}</button>
+  </div>`).join('')}
+  <div class="row" style="margin-top:14px"><button class="btn small" onclick="saveAll('${s.id}')">Tout enregistrer</button>
+  <button class="btn small" onclick="startQuiz('${s.id}')">Passer le quiz 🎯</button>
+  <button class="btn small" onclick="startCloze('${s.id}')">Compléter ✏️</button>
+  <button class="btn small" onclick="startDict('${s.id}')">Dictée ✍️</button></div>
+ </div>
+ ${extraWords(s)}`;
+}
+function tokenize(t,kw,sid){
+ const low=t.toLowerCase();
+ return t.replace(/[A-Za-z’'-]+/g,(w,off)=>{
+  const isKw=!STOP.has(w.toLowerCase())&&kw.some(k=>k.split(' ').includes(w.toLowerCase()));
+  const sv=isSaved(w)?' saved':'';
+  return `<span class="w${isKw?' kw':''}${sv}" data-s="${off}" onclick="wordClick(this,'${sid}')">${w}</span>`});
+}
+function saveVideo(id){const v=ytId($('#yt').value.trim());if(!v){alert("Lien YouTube non reconnu.");return}videos[id]=v;store.set('videos',videos);renderScene()}
+function playLine(sid,i){const s=SCENES.find(x=>x.id===sid);document.querySelectorAll('.line').forEach(e=>e.classList.remove('playing'));$('#L'+i).classList.add('playing');speak(s.lines[i][1],()=>{clearNow();$('#L'+i)&&$('#L'+i).classList.remove('playing')},kara(i))}
+function clearNow(){document.querySelectorAll('.w.now').forEach(w=>w.classList.remove('now'))}
+function kara(i){return e=>{if(e.name&&e.name!=='word')return;const ws=[...document.querySelectorAll('#L'+i+' .w')];clearNow();let c=null;ws.forEach(w=>{if(+w.dataset.s<=e.charIndex)c=w});if(c)c.classList.add('now')}}
+function playAll(sid){const s=SCENES.find(x=>x.id===sid);let i=0;
+ const next=()=>{if(state.view!=='scene'||i>=s.lines.length)return;const k=i++;document.querySelectorAll('.line').forEach(e=>e.classList.remove('playing'));const el=$('#L'+k);if(!el)return;el.classList.add('playing');el.scrollIntoView({block:'center',behavior:'smooth'});speak(s.lines[k][1],()=>{clearNow();setTimeout(next,350)},kara(k))};next()}
+
+/* ======================= MOTS ======================= */
+function findDef(sid,w){
+ const s=SCENES.find(x=>x.id===sid);const lw=w.toLowerCase();if(STOP.has(lw))return undefined;
+ return s.vocab.find(v=>v[0].toLowerCase().replace(/\(.*?\)/g,'').trim().split(' ').includes(lw)||v[0].toLowerCase().startsWith(lw));
+}
+function isSaved(w){const lw=w.toLowerCase().replace(/\(.*?\)/g,'').trim();return vocab.some(v=>v.w.toLowerCase()===lw)}
+function wordClick(el,sid){
+ const w=el.textContent;const d=findDef(sid,w);speak(w);
+ const s=SCENES.find(x=>x.id===sid);
+ $('#panel').innerHTML=`
+  <div class="row"><h3 style="flex:1">${d?d[0]:w}</h3><button class="icon" onclick="closePanel()">✕</button></div>
+  <p class="def">${d?d[1]+' — <i>'+d[2]+'</i>':'Pas dans la liste clé. Ajoute ta propre traduction ou consulte un dictionnaire.'}</p>
+  ${d?'':`<input id="mydef" placeholder="Traduction / note" style="width:100%;margin-bottom:8px;background:var(--card2);border:0;color:var(--text);padding:9px 14px;border-radius:999px;font:inherit">`}
+  <div class="row">
+   <button class="btn small" id="sv">${isSaved(d?d[0]:w)?'✓ Déjà enregistré':'＋ Enregistrer ('+s.title+')'}</button>
+   <button class="btn ghost small" onclick="speak(${sq(d?d[0]:w)})">🔊 Réécouter</button>
+   <a class="btn ghost small" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.wordreference.com/enfr/${encodeURIComponent(w.toLowerCase())}">WordReference ↗</a>
+  </div>`;
+ $('#panel').classList.add('open');
+ $('#sv').onclick=()=>{
+  const word=d?d[0]:w;if(isSaved(word))return;
+  const def=d?d[1]:(($('#mydef')&&$('#mydef').value)||'(à compléter)');
+  addWord(word,def,d?d[2]:'',s);
+  el.classList.add('saved');closePanel();
+ };
+}
+function closePanel(){$('#panel').classList.remove('open')}
+function addWord(w,def,ex,s){touchStreak();vocab.push({w:w.replace(/\(.*?\)/g,'').trim(),def,ex,session:s.title,sceneId:s.id,box:0,added:Date.now()});store.set('vocab',vocab)}
+function saveKey(sid,i){const s=SCENES.find(x=>x.id===sid),v=s.vocab[i];if(!isSaved(v[0]))addWord(v[0],v[1],v[2],s);renderScene()}
+function saveAll(sid){const s=SCENES.find(x=>x.id===sid);s.vocab.forEach(v=>{if(!isSaved(v[0]))addWord(v[0],v[1],v[2],s)});renderScene()}
+
+/* ======================= VOCABULAIRE PAR SESSION ======================= */
+function renderVocab(){
+ if(!vocab.length){$('#app').innerHTML=`<h1>Mon vocabulaire</h1><div class="empty">Rien d'enregistré pour l'instant.<br>Ouvre une scène et clique sur un mot ✨</div>`;return}
+ const groups={};vocab.forEach(v=>(groups[v.session]??=[]).push(v));
+ $('#app').innerHTML=`<h1>Mon vocabulaire</h1><p class="sub">Classé par session (scène).</p>
+ <div class="row" style="margin-bottom:16px"><input class="vs" placeholder="Rechercher un mot…" oninput="vfilter(this.value)"><button class="btn small" onclick="exportVocab()">Exporter en CSV</button></div>
+ ${Object.entries(groups).map(([k,a])=>`<div class="vocab-session"><h2>${k} <span class="tag">${a.length}</span></h2><div class="card">
+ ${a.map(v=>`<div class="vitem"><button class="play" onclick="speak(${sq(v.w)})">🔊</button>
+  <div class="l"><b>${v.w}</b><small>${v.def}${v.ex?' — <i>'+v.ex+'</i>':''}</small></div>
+  <button class="icon" title="Supprimer" onclick="delWord(${vocab.indexOf(v)})">🗑</button></div>`).join('')}
+ </div></div>`).join('')}`;
+}
+function delWord(i){vocab.splice(i,1);store.set('vocab',vocab);renderVocab()}
+function exportVocab(){
+ const csv='mot;definition;exemple;session\n'+vocab.map(v=>[v.w,v.def,v.ex,v.session].map(x=>'"'+String(x||'').replace(/"/g,'""')+'"').join(';')).join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='vocabulaire.csv';a.click();
+}
+
+/* ======================= RÉVISION (cartes, système Leitner) ======================= */
+let rev={queue:[],i:0,flip:false};
+function renderReview(){
+ if(!vocab.length){$('#app').innerHTML=`<h1>Réviser</h1><div class="empty">Enregistre d'abord quelques mots.</div>`;return}
+ if(!rev.queue.length||rev.i>=rev.queue.length){
+  rev.queue=vocab.map((v,idx)=>idx).filter(i=>vocab[i].box<4).sort(()=>Math.random()-.5);rev.i=0;rev.flip=false;
+  if(!rev.queue.length){$('#app').innerHTML=`<h1>Réviser</h1><div class="empty">🎉 Tous tes mots sont maîtrisés !<br><button class="btn" style="margin-top:14px" onclick="vocab.forEach(v=>v.box=0);store.set('vocab',vocab);rev.queue=[];renderReview()">Tout recommencer</button></div>`;return}
+ }
+ const v=vocab[rev.queue[rev.i]];
+ $('#app').innerHTML=`<h1>Réviser</h1><p class="sub">Carte ${rev.i+1} / ${rev.queue.length}</p>
+ <div class="fc ${rev.flip?'flip':''}" onclick="rev.flip=!rev.flip;renderReview()"><div>
+  <div class="face"><b>${v.w}</b><p class="sub" style="margin-top:10px">Touche pour retourner</p></div>
+  <div class="face back"><b style="font-size:1.3rem">${v.def}</b><p class="sub" style="margin-top:10px"><i>${v.ex||''}</i></p></div>
+ </div></div>
+ <div class="row" style="justify-content:center">
+  <button class="play" onclick="speak(${sq(v.w)})">🔊</button>
+  <button class="btn ghost" onclick="grade(false)">😕 Pas encore</button>
+  <button class="btn" onclick="grade(true)">😎 Je sais</button>
+ </div>`;
+}
+function grade(ok){touchStreak();const v=vocab[rev.queue[rev.i]];v.box=ok?Math.min(4,v.box+1):0;store.set('vocab',vocab);rev.i++;rev.flip=false;renderReview()}
+
+/* ======================= QUIZ ======================= */
+let qz={s:null,i:0,score:0,locked:false};
+function startQuiz(sid){const sc=SCENES.find(x=>x.id===sid);
+ const quiz=sc.quiz.map(q=>{const o=q[1].map((t,i)=>[t,i===q[2]]).sort(()=>Math.random()-.5);return[q[0],o.map(x=>x[0]),o.findIndex(x=>x[1])]}).sort(()=>Math.random()-.5);
+ qz={s:{...sc,quiz},i:0,score:0,locked:false};go('quiz')}
+function renderQuiz(){
+ const {s,i}=qz;
+ if(i>=s.quiz.length){touchStreak();if(s.id!=='lexicon'){done[s.id]=Math.max(done[s.id]||0,qz.score);store.set('done',done)}
+  $('#app').innerHTML=`<h1>Résultat</h1><div class="card" style="text-align:center"><h2>${qz.score} / ${s.quiz.length}</h2><p class="sub">${qz.score===s.quiz.length?'Parfait ! 🏆':'Bien joué, rejoue la scène pour progresser.'}</p><div class="row" style="justify-content:center"><button class="btn" onclick="go('${s.id==='lexicon'?'lexicon':'home'}')">${s.id==='lexicon'?'Retour au lexique':'Retour aux scènes'}</button></div></div>`;return}
+ const q=s.quiz[i];
+ $('#app').innerHTML=`<button class="back-link" onclick="${s.id==='lexicon'?"go('lexicon')":"go('scene','"+s.id+"')"}">← ${s.title}</button><h1>Quiz</h1><p class="sub">Question ${i+1} / ${s.quiz.length}</p>
+ <div class="card"><h2 style="margin-top:0">${q[0]}</h2>
+ ${q[1].map((o,k)=>`<button class="opt" onclick="answer(${k},this)">${o}</button>`).join('')}</div>`;
+}
+function answer(k,el){
+ if(qz.locked)return;qz.locked=true;const q=qz.s.quiz[qz.i];
+ const opts=document.querySelectorAll('.opt');opts[q[2]].classList.add('ok');
+ if(k===q[2])qz.score++;else el.classList.add('ko');
+ setTimeout(()=>{qz.i++;qz.locked=false;renderQuiz()},1100);
+}
+
+
+/* ======================= SÉRIE, SAUVEGARDE ======================= */
+function touchStreak(){const t=new Date().toISOString().slice(0,10);let st=store.get('streak',{d:'',n:0});if(st.d===t)return;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);st={d:t,n:st.d===y?st.n+1:1};store.set('streak',st)}
+function streakVal(){const st=store.get('streak',{d:'',n:0});const t=new Date().toISOString().slice(0,10),y=new Date(Date.now()-864e5).toISOString().slice(0,10);return(st.d===t||st.d===y)?st.n:0}
+function exportAll(){const data={vocab,done,videos,streak:store.get('streak',{d:'',n:0})};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));a.download='scene-par-scene-progression.json';a.click()}
+function importAll(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);vocab=d.vocab||[];done=d.done||{};videos=d.videos||{};store.set('vocab',vocab);store.set('done',done);store.set('videos',videos);if(d.streak)store.set('streak',d.streak);alert('Progression restaurée ✔');renderHome()}catch(e){alert('Fichier invalide.')}};r.readAsText(f)}
+
+/* ======================= DICTÉE ======================= */
+let dc={s:null,i:0,sc:[]};
+function startDict(sid){dc={s:SCENES.find(x=>x.id===sid),i:0,sc:[]};go('dict')}
+function cleanW(w){return w.toLowerCase().replace(/[’]/g,"'").replace(/[^a-z0-9']/g,'')}
+function lcsKeep(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},()=>Array(n+1).fill(0));
+ for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]+1:Math.max(d[i-1][j],d[i][j-1]);
+ const keep=new Set();let i=m,j=n;while(i>0&&j>0){if(a[i-1]===b[j-1]){keep.add(i-1);i--;j--}else if(d[i-1][j]>=d[i][j-1])i--;else j--}return keep}
+function renderDict(){
+ const {s,i}=dc,n=s.lines.length;
+ if(i>=n){touchStreak();const avg=Math.round(dc.sc.reduce((a,b)=>a+b,0)/dc.sc.length);
+  $('#app').innerHTML=`<h1>Dictée terminée</h1><div class="card" style="text-align:center"><h2>${avg} %</h2><p class="sub">${avg>=90?'Oreille d\'expert ! 🏆':avg>=60?'Bien joué, réécoute la scène pour progresser.':'Continue : écoute la scène plusieurs fois, puis recommence.'}</p><div class="row" style="justify-content:center"><button class="btn" onclick="startDict('${s.id}')">Recommencer</button><button class="btn ghost" onclick="go('scene','${s.id}')">Retour à la scène</button></div></div>`;return}
+ $('#app').innerHTML=`<button class="back-link" onclick="go('scene','${s.id}')">← ${s.title}</button>
+ <h1>Dictée ✍️</h1><p class="sub">Phrase ${i+1} / ${n} — écoute, puis écris ce que tu entends.</p>
+ <div class="card">
+  <div class="row" style="margin-bottom:12px">
+   <button class="btn small" onclick="speak(dc.s.lines[dc.i][1])">🔊 Écouter</button>
+   <button class="btn ghost small" onclick="slowSay()">🐢 Lentement</button>
+  </div>
+  <textarea id="dt" rows="3" placeholder="Tape ici ce que tu entends…" autocomplete="off" spellcheck="false"></textarea>
+  <div class="row" style="margin-top:10px"><button class="btn" id="chk" onclick="checkDict()">Vérifier</button></div>
+  <div id="dres" style="margin-top:14px"></div>
+ </div>`;
+ setTimeout(()=>speak(s.lines[i][1]),300);
+}
+function slowSay(){const r=state.rate;state.rate=.65;speak(dc.s.lines[dc.i][1]);state.rate=r}
+function checkDict(){
+ const {s,i}=dc;const orig=s.lines[i][1].split(/\s+/);const exp=orig.map(cleanW);
+ const usr=$('#dt').value.split(/\s+/).map(cleanW).filter(Boolean);
+ const keep=lcsKeep(exp,usr);const score=Math.round(keep.size/exp.length*100);dc.sc.push(score);
+ $('#chk').disabled=true;
+ $('#dres').innerHTML=`<p><b>${score} %</b> — ${score===100?'Parfait ! ✅':'les mots en rouge ont été manqués'}</p>
+  <p style="font-size:1.1rem;margin:8px 0">${orig.map((w,k)=>`<span class="${keep.has(k)?'okw':'kow'}">${w}</span>`).join(' ')}</p>
+  <p class="sub">${s.tr[i]}</p>
+  <button class="btn" onclick="dc.i++;renderDict()">${i+1>=s.lines.length?'Voir le résultat':'Phrase suivante →'}</button>`;
+}
+
+
+/* ======================= OUTILS : voix, micro, recherche ======================= */
+const STOP=new Set(['to','a','an','the','of','in','on','at','it','is','up','one','ones',"one's",'with','for','and','or','be','do','oneself','someone','something','i','you','my','your','this','that','as','by','from','off','out','not','are','was','am','me','too','no']);
+function voiceSel(){if(!voices.length)return'';const cur=store.get('voice','');
+ return `<select title="Voix" onchange="store.set('voice',this.value)">${voices.map(v=>`<option value="${v.name.replace(/"/g,'&quot;')}" ${cur===v.name?'selected':''}>${v.name.replace(/</g,'')} (${v.lang})</option>`).join('')}</select>`}
+let rec=null;
+async function recLine(i){
+ if(!navigator.mediaDevices||!window.MediaRecorder){alert("Enregistrement non disponible sur ce navigateur.");return}
+ if(rec&&rec.state==='recording'){rec.stop();return}
+ const btn=$('#R'+i);
+ try{
+  const st=await navigator.mediaDevices.getUserMedia({audio:true});
+  const ch=[];rec=new MediaRecorder(st);
+  rec.ondataavailable=e=>ch.push(e.data);
+  rec.onstop=()=>{st.getTracks().forEach(t=>t.stop());if(btn){btn.textContent='🎤';btn.classList.remove('rec')}new Audio(URL.createObjectURL(new Blob(ch,{type:rec.mimeType}))).play()};
+  rec.start();btn.textContent='⏹';btn.classList.add('rec');
+  setTimeout(()=>{if(rec&&rec.state==='recording')rec.stop()},15000);
+ }catch(e){alert("Accès au micro refusé.")}
+}
+function vfilter(q){q=q.toLowerCase();document.querySelectorAll('.vitem').forEach(e=>e.style.display=e.textContent.toLowerCase().includes(q)?'':'none')}
+
+/* ======================= EXERCICE À TROUS ======================= */
+let cz={s:null,items:[],i:0,score:0};
+function startCloze(sid){
+ const s=SCENES.find(x=>x.id===sid);const kw=new Set();
+ s.vocab.forEach(v=>v[0].replace(/\(.*?\)/g,'').toLowerCase().split(/\s+/).forEach(w=>{w=w.replace(/[^a-z'’-]/g,'');if(w.length>=4&&!STOP.has(w))kw.add(w)}));
+ const items=[];
+ s.lines.forEach((l,i)=>{const m=[...l[1].matchAll(/[A-Za-z’'-]+/g)].find(m=>kw.has(m[0].toLowerCase()));if(m)items.push({i,start:m.index,word:m[0]})});
+ if(!items.length){alert("Pas d'exercice pour cette scène.");return}
+ cz={s,items,i:0,score:0};go('cloze');
+}
+function renderCloze(){
+ const {s,items,i}=cz;
+ if(i>=items.length){touchStreak();$('#app').innerHTML=`<h1>Exercice terminé</h1><div class="card" style="text-align:center"><h2>${cz.score} / ${items.length}</h2><p class="sub">${cz.score===items.length?'Sans faute ! 🏆':'Relis la scène et réessaie.'}</p><div class="row" style="justify-content:center"><button class="btn" onclick="startCloze('${s.id}')">Recommencer</button><button class="btn ghost" onclick="go('scene','${s.id}')">Retour à la scène</button></div></div>`;return}
+ const it=items[i],line=s.lines[it.i][1];
+ $('#app').innerHTML=`<button class="back-link" onclick="go('scene','${s.id}')">← ${s.title}</button>
+ <h1>Compléter ✏️</h1><p class="sub">Phrase ${i+1} / ${items.length} — retrouve le mot manquant.</p>
+ <div class="card">
+  <p class="who" style="margin-bottom:6px">${s.lines[it.i][0]}</p>
+  <p style="font-size:1.15rem;line-height:2">${line.slice(0,it.start)}<input class="cin" id="cin" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')checkCloze()">${line.slice(it.start+it.word.length)}</p>
+  <p class="sub">${s.tr[it.i]}</p>
+  <div class="row"><button class="btn small" onclick="speak(cz.s.lines[cz.items[cz.i].i][1])">🔊 Écouter</button>
+  <button class="btn ghost small" onclick="$('#cin').placeholder=cz.items[cz.i].word[0]+'…'">💡 Indice</button>
+  <button class="btn" id="cchk" onclick="checkCloze()">Vérifier</button></div>
+  <div id="cres" style="margin-top:14px"></div>
+ </div>`;
+ $('#cin').focus();
+}
+function checkCloze(){
+ const it=cz.items[cz.i];const ok=cleanW($('#cin').value)===cleanW(it.word);if(ok)cz.score++;
+ $('#cchk').disabled=true;$('#cin').disabled=true;
+ $('#cres').innerHTML=`<p class="${ok?'okw':'kow'}">${ok?'Correct ! ✅':'Réponse : '+it.word}</p><button class="btn" style="margin-top:10px" onclick="cz.i++;renderCloze()">${cz.i+1>=cz.items.length?'Voir le résultat':'Suivant →'}</button>`;
+}
+
+
+/* ======================= LEXIQUE AVANCÉ (B2 → C2) ======================= */
+const sq=x=>"'"+String(x).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\n/g,' ')+"'";
+const LEXS={title:'Lexique avancé',id:'lexicon'};
+/* [niveau, mot, sens en français, exemple, catégorie] */
+const LEX=[
+["B2","downplay","minimiser, relativiser","The company downplayed the risks.","Verbes"],
+["B2","come across","tomber sur ; donner l'impression d'être","She comes across as very confident.","Verbes à particule"],
+["B2","hinder","entraver, gêner","Bad weather hindered the rescue.","Verbes"],
+["B2","reluctant","réticent, peu enclin à","He was reluctant to admit it.","Adjectifs"],
+["B2","overwhelmed","submergé (émotions, travail)","I felt overwhelmed by the workload.","Adjectifs"],
+["B2","drawback","inconvénient","The only drawback is the price.","Noms"],
+["B2","cutting-edge","de pointe","cutting-edge technology","Adjectifs"],
+["B2","on the verge of","sur le point de","She was on the verge of tears.","Expressions"],
+["B2","bear with me","patientez un instant","Bear with me while I check.","Expressions"],
+["B2","fall short of","être en deçà de, ne pas atteindre","The results fell short of expectations.","Verbes à particule"],
+["B2","come up with","trouver (une idée, une solution)","She came up with a clever solution.","Verbes à particule"],
+["B2","setback","contretemps, revers","The project suffered a major setback.","Noms"],
+["B2","bluntly","sans détour, crûment","He told me bluntly that I'd failed.","Adverbes"],
+["B2","tedious","fastidieux, ennuyeux","a tedious task","Adjectifs"],
+["B2","thrive","s'épanouir, prospérer","Plants thrive in sunlight.","Verbes"],
+["B2","get the hang of","prendre le pli, saisir le truc","I'm getting the hang of it.","Expressions"],
+["B2","in the long run","à long terme","It will pay off in the long run.","Expressions"],
+["B2","scrutiny","examen minutieux, regard critique","The plan is under public scrutiny.","Noms"],
+["B2","feasible","faisable, réalisable","Is the plan feasible?","Adjectifs"],
+["B2","tackle","s'attaquer à (un problème)","We must tackle climate change.","Verbes"],
+["B2","outweigh","l'emporter sur","The benefits outweigh the risks.","Verbes"],
+["B2","pass the buck","refiler la responsabilité","He always passes the buck.","Expressions"],
+["B2","hit the nail on the head","mettre le doigt dessus","You've hit the nail on the head.","Expressions"],
+["B2","backfire","se retourner contre soi","The plan backfired.","Verbes"],
+["B2","spot on","parfaitement juste (UK)","Your analysis is spot on.","Expressions"],
+["B2","streamline","rationaliser, simplifier","We streamlined the process.","Travail"],
+["B2","ramp up","intensifier, monter en puissance","They ramped up production.","Travail"],
+["B2","touch and go","incertain, risqué","It was touch and go for hours.","Expressions"],
+["B2","eventually","finalement (≠ éventuellement)","He eventually agreed.","Faux amis"],
+["B2","sensible","raisonnable, sensé (≠ sensible)","That's a sensible decision.","Faux amis"],
+["C1","ubiquitous","omniprésent","Smartphones are ubiquitous.","Adjectifs"],
+["C1","mitigate","atténuer, limiter","Measures to mitigate the impact.","Verbes"],
+["C1","tenuous","ténu, fragile (lien, argument)","a tenuous connection","Adjectifs"],
+["C1","exacerbate","aggraver","Stress exacerbates the problem.","Verbes"],
+["C1","conundrum","casse-tête, dilemme","It's a real conundrum.","Noms"],
+["C1","glean","glaner, tirer (une information)","What can we glean from the data?","Verbes"],
+["C1","elusive","insaisissable, difficile à atteindre","Success remained elusive.","Adjectifs"],
+["C1","bolster","renforcer, soutenir","Bolster public confidence.","Verbes"],
+["C1","reticent","peu enclin à parler, réservé","He was reticent about his plans.","Adjectifs"],
+["C1","stave off","repousser, tenir à distance","They tried to stave off bankruptcy.","Verbes à particule"],
+["C1","double-edged sword","arme à double tranchant","Fame is a double-edged sword.","Expressions"],
+["C1","gloss over","passer sous silence, éluder","He glossed over the details.","Verbes à particule"],
+["C1","nuanced","nuancé","a nuanced argument","Adjectifs"],
+["C1","culminate in","aboutir à, se solder par","The talks culminated in a deal.","Verbes"],
+["C1","undermine","saper, miner","It undermined his authority.","Verbes"],
+["C1","crux","nœud (du problème), point essentiel","That's the crux of the matter.","Noms"],
+["C1","at odds with","en désaccord / en contradiction avec","The report is at odds with the evidence.","Expressions"],
+["C1","watershed moment","tournant décisif","It was a watershed moment in history.","Expressions"],
+["C1","pare down","réduire à l'essentiel","We pared down the budget.","Verbes à particule"],
+["C1","ostensibly","en apparence, soi-disant","He left, ostensibly for health reasons.","Adverbes"],
+["C1","draconian","draconien, d'une sévérité excessive","draconian measures","Adjectifs"],
+["C1","untenable","indéfendable, intenable","The situation is untenable.","Adjectifs"],
+["C1","stumbling block","obstacle, pierre d'achoppement","The main stumbling block is funding.","Noms"],
+["C1","inherent","inhérent, intrinsèque","the risks inherent in any investment","Adjectifs"],
+["C1","curtail","réduire, restreindre","They curtailed spending.","Verbes"],
+["C1","come to a head","atteindre un point critique","The crisis came to a head.","Expressions"],
+["C1","knee-jerk","réflexe, irréfléchi","a knee-jerk reaction","Adjectifs"],
+["C1","leverage","tirer parti de, exploiter","Leverage your experience.","Travail"],
+["C1","moot point","point discutable (UK) ; sans objet (US)","Whether he knew is a moot point.","Expressions"],
+["C1","resume","reprendre (≠ résumer)","Talks will resume on Monday.","Faux amis"],
+["C2","equivocate","tergiverser, user de faux-fuyants","The minister equivocated.","Verbes"],
+["C2","obfuscate","obscurcir, embrouiller volontairement","He tried to obfuscate the truth.","Verbes"],
+["C2","sycophant","flagorneur, lèche-bottes","He was surrounded by sycophants.","Noms"],
+["C2","capricious","capricieux, imprévisible","capricious weather","Adjectifs"],
+["C2","pernicious","pernicieux, nocif à long terme","a pernicious influence","Adjectifs"],
+["C2","laconic","laconique, très bref","a laconic reply","Adjectifs"],
+["C2","ephemeral","éphémère","ephemeral fame","Adjectifs"],
+["C2","anachronistic","anachronique","anachronistic laws","Adjectifs"],
+["C2","plethora","pléthore, surabondance","a plethora of options","Noms"],
+["C2","eschew","éviter, s'abstenir de (soutenu)","He eschews violence.","Verbes"],
+["C2","juxtapose","juxtaposer, mettre côte à côte","The film juxtaposes old and new.","Verbes"],
+["C2","recalcitrant","récalcitrant, rebelle","a recalcitrant child","Adjectifs"],
+["C2","spurious","fallacieux, sans fondement","a spurious claim","Adjectifs"],
+["C2","insidious","insidieux, sournois","an insidious disease","Adjectifs"],
+["C2","gainsay","contredire, nier (soutenu)","No one can gainsay his talent.","Verbes"],
+["C2","vindicate","donner raison à, innocenter","The results vindicated her.","Verbes"],
+["C2","mercurial","d'humeur changeante","a mercurial temperament","Adjectifs"],
+["C2","truculent","agressif, hargneux","a truculent teenager","Adjectifs"],
+["C2","bellwether","indicateur, baromètre (de tendance)","a bellwether of the economy","Noms"],
+["C2","proclivity","penchant, inclination","a proclivity for risk","Noms"],
+["C2","lambast","fustiger, éreinter","The film was lambasted by critics.","Verbes"],
+["C2","ersatz","de substitution, factice (de moindre qualité)","ersatz leather","Adjectifs"],
+["C2","Pyrrhic victory","victoire à la Pyrrhus (trop coûteuse)","It was a Pyrrhic victory.","Expressions"],
+["C2","castigate","réprimander sévèrement","He was castigated for his negligence.","Verbes"],
+["C2","evanescent","fugace, qui s'évanouit","evanescent beauty","Adjectifs"],
+["C2","sanguine","optimiste malgré les difficultés","She is sanguine about our chances.","Adjectifs"],
+["C2","hoist with one's own petard","pris à son propre piège","He was hoist with his own petard.","Expressions"],
+["C2","fastidious","pointilleux, méticuleux (≠ fastidieux)","He is fastidious about hygiene.","Faux amis"],
+["C2","wanton","gratuit, délibéré et injustifié","wanton destruction","Adjectifs"],
+["C2","pellucid","limpide, très clair","pellucid prose","Adjectifs"]
+];
+function lexTag(l){return `<span class="tag lv-${l[0][0]}">${l[0]}</span>`}
+function wotdHtml(){
+ const i=Math.floor(Date.now()/864e5)%LEX.length,l=LEX[i];
+ return `<div class="card" style="margin-bottom:18px"><div class="row"><b>💡 Mot du jour</b>${lexTag(l)}<span class="tag">${l[4]}</span></div>
+  <h2 style="margin:8px 0 2px">${l[1]}</h2><p class="sub" style="margin:0 0 10px">${l[2]} — <i>${l[3]}</i></p>
+  <div class="row"><button class="play" onclick="speak(LEX[${i}][1])">🔊</button><button class="play" title="Écouter l'exemple" onclick="speak(LEX[${i}][3])">💬</button>
+  <button class="btn ghost small" onclick="saveLex(${i},this)">${isSaved(l[1])?'✓ Enregistré':'＋ Enregistrer'}</button>
+  <button class="btn small" onclick="go('lexicon')">Voir le lexique →</button></div></div>`;
+}
+function saveLex(i,btn){const l=LEX[i];if(!isSaved(l[1]))addWord(l[1],l[2],l[3],LEXS);if(btn)btn.textContent='✓ Enregistré'}
+function saveLexAll(){LEX.forEach((l,i)=>{if((state.lv==='all'||l[0]===state.lv)&&!isSaved(l[1]))addWord(l[1],l[2],l[3],LEXS)});renderLex()}
+function lexFilter(q){q=q.toLowerCase();document.querySelectorAll('.lexcard').forEach(e=>e.style.display=e.textContent.toLowerCase().includes(q)?'':'none')}
+function renderLex(){
+ const list=LEX.map((l,i)=>[l,i]).filter(([l])=>state.lv==='all'||l[0]===state.lv);
+ $('#app').innerHTML=`<h1>Lexique avancé 🧠</h1><p class="sub">${LEX.length} mots et expressions utiles mais peu connus, de B2 à C2. Écoute, enregistre, révise.</p>
+ <div class="chips">${['all','B2','C1','C2'].map(l=>`<button class="chip ${state.lv===l?'on':''}" onclick="state.lv='${l}';renderLex()">${l==='all'?'Tous':l}</button>`).join('')}</div>
+ <div class="row" style="margin-bottom:16px"><input class="vs" placeholder="Rechercher un mot…" oninput="lexFilter(this.value)">
+  <button class="btn small" onclick="startLexQuiz()">Quiz 🎯</button>
+  <button class="btn ghost small" onclick="saveLexAll()">Tout enregistrer (${list.length})</button></div>
+ <div class="grid">${list.map(([l,i])=>`<div class="card lexcard">
+  <div class="row"><b class="lexw">${l[1]}</b>${lexTag(l)}<span class="tag">${l[4]}</span></div>
+  <p class="def">${l[2]}</p><p><i>${l[3]}</i></p>
+  <div class="row" style="margin-top:10px"><button class="play" onclick="speak(LEX[${i}][1])">🔊</button>
+  <button class="play" title="Écouter l'exemple" onclick="speak(LEX[${i}][3])">💬</button>
+  <button class="btn ghost small" onclick="saveLex(${i},this)">${isSaved(l[1])?'✓ Enregistré':'＋ Enregistrer'}</button></div></div>`).join('')}</div>`;
+}
+function startLexQuiz(){
+ const pool=LEX.filter(l=>state.lv==='all'||l[0]===state.lv).sort(()=>Math.random()-.5).slice(0,10);
+ const quiz=pool.map(l=>{
+  const others=LEX.filter(o=>o[1]!==l[1]&&o[2]!==l[2]).sort(()=>Math.random()-.5).slice(0,2).map(o=>[o[2],false]);
+  const opts=[[l[2],true],...others].sort(()=>Math.random()-.5);
+  return [`Que signifie « ${l[1]} » ?`,opts.map(o=>o[0]),opts.findIndex(o=>o[1])];
+ });
+ qz={s:{...LEXS,quiz},i:0,score:0,locked:false};go('quiz');
+}
+function extraWords(s){
+ if(!['B2','C1','C2'].includes(s.level))return'';
+ const idx=LEX.map((l,i)=>i).filter(i=>LEX[i][0]===s.level);
+ const k=SCENES.filter(x=>x.level===s.level).findIndex(x=>x.id===s.id);
+ const pick=[0,1,2,3,4,5].map(j=>idx[(k*6+j)%idx.length]);
+ return `<h2>Pour aller plus loin ✨</h2><p class="sub">Mots utiles et peu connus du niveau ${s.level}, à glisser dans tes phrases.</p>
+ <div class="card">${pick.map(i=>`<div class="vitem"><button class="play" onclick="speak(LEX[${i}][1])">🔊</button>
+  <div class="l"><b>${LEX[i][1]}</b><small>${LEX[i][2]} — <i>${LEX[i][3]}</i></small></div>
+  <button class="btn ghost small" onclick="saveLex(${i},this)">${isSaved(LEX[i][1])?'✓ Enregistré':'＋ Enregistrer'}</button></div>`).join('')}</div>`;
+}
+
+$('#theme').textContent=document.documentElement.classList.contains('light')?'☀️':'🌙';
+render();
+/* Installation / hors connexion (uniquement en ligne, en https) */
+if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
